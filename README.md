@@ -1,2 +1,2 @@
-# observable-data-object
+# Observable Data Object
 A simple observer pattern.  
