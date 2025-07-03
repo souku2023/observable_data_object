@@ -141,12 +141,12 @@ class ObservableDataObject(object):
             with self.__value_lock:
                 try:
                     task: Future = ObservableDataObject.__threadpool.submit(
-                            self.__notify_observer,
-                            observer, new_data, observer_name
+                        self.__notify_observer,
+                        observer, new_data, observer_name
                     )
                     self.__notification_task_list.append(task)
                     task.add_done_callback(
-                            self.__remove_from_notification_task_list
+                        self.__remove_from_notification_task_list
                     )
                 except Exception as e:
                     raise FailedToNotifyObserverError(
@@ -154,7 +154,7 @@ class ObservableDataObject(object):
                     ) from e
 
     def __notify_observer(
-        self, observer: Callable, new_data: Any, observer_name: str
+            self, observer: Callable, new_data: Any, observer_name: str
     ) -> None:
         """
         Notify a single observer of new data.
