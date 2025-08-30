@@ -101,6 +101,8 @@ class ObservableDataObject(object):
 
         with self.__observer_lock:
             self.__observers.append(observer)
+            if observer_name is None:
+                observer_name = str(self) + f"_{len(self.__observers) - 1}"
             self.__observer_names.append(observer_name)
 
     def post_value(self, new_data: Any):
@@ -135,18 +137,18 @@ class ObservableDataObject(object):
 
         # Notify all observers concurrently using the shared thread pool
         for idx, observer in enumerate(observers):
-            observer_name = names[idx] if names[idx] is not None else repr(observer)
+            observer_name = names[idx] if names[idx] is not None else str(self) + f"_{idx}"
             # Trigger all observers for a value before triggering observers for
             # the next post_value call
             with self.__value_lock:
                 try:
                     task: Future = ObservableDataObject.__threadpool.submit(
-                        self.__notify_observer,
-                        observer, new_data, observer_name
+                            self.__notify_observer,
+                            observer, new_data, observer_name
                     )
                     self.__notification_task_list.append(task)
                     task.add_done_callback(
-                        self.__remove_from_notification_task_list
+                            self.__remove_from_notification_task_list
                     )
                 except Exception as e:
                     raise FailedToNotifyObserverError(
@@ -154,7 +156,7 @@ class ObservableDataObject(object):
                     ) from e
 
     def __notify_observer(
-            self, observer: Callable, new_data: Any, observer_name: str
+        self, observer: Callable, new_data: Any, observer_name: str
     ) -> None:
         """
         Notify a single observer of new data.
