@@ -49,7 +49,9 @@ class ObservableDataObject(object):
     """
 
     # Static thread pool shared by all instances
-    __threadpool: ThreadPoolExecutor | None = ThreadPoolExecutor(max_workers=10)
+    __threadpool: ThreadPoolExecutor | None = ThreadPoolExecutor(
+        max_workers=10, thread_name_prefix="ObservableDataObject_ThreadPool",
+    )
     __shutdown_registered: bool = False
 
     def __init__(self, data: Any):
