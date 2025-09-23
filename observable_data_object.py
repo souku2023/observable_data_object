@@ -103,6 +103,8 @@ class ObservableDataObject(object):
 
         with self.__observer_lock:
             self.__observers.append(observer)
+            if observer_name is None:
+                observer_name = str(self) + f"_{len(self.__observers) - 1}"
             self.__observer_names.append(observer_name)
 
     def post_value(self, new_data: Any):
@@ -137,7 +139,7 @@ class ObservableDataObject(object):
 
         # Notify all observers concurrently using the shared thread pool
         for idx, observer in enumerate(observers):
-            observer_name = names[idx] if names[idx] is not None else repr(observer)
+            observer_name = names[idx] if names[idx] is not None else str(self) + f"_{idx}"
             # Trigger all observers for a value before triggering observers for
             # the next post_value call
             with self.__value_lock:
